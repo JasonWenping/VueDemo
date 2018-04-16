@@ -1,12 +1,12 @@
 <template>
   <div class="hello">
-    <headers-vue></headers-vue>
+    <!-- <headers-vue></headers-vue> -->
     <div class="container">
       <div class="jumbotron">
         <h2>{{ titles }}</h2>
         <p>{{ msg }}</p>
         <input type="text" class="form-control" placeholder="Input what you'r going to do...." v-model="inputValue">
-        <button class="btn btn-primary" @click="addTask">Add Task</button>
+        <button class="btn btn-primary" @click="addTask" @keyup.enter="addTask" type="button">Add Task</button>
       </div>
 
       <div class="row">
@@ -15,8 +15,8 @@
             <div class="panel-heading">Ready</div>
             <div class="panel-body">
               <ul v-if="task.length">
-                <li v-for="(item,index) in task" :key="index">
-                  <label><input type="checkbox" @change="changeState(index)"></label> 
+                <li v-for="(item,index) in task" :key="index" v-if="item.states === 1">
+                  <label><input type="checkbox" @change="changeState(index)" v-model="checked[index]"></label> 
                   {{ item.contents }} 
                   <button class="close" type="button" aria-label="Close" @click="delTask(index)">
                     <span aria-hidden="true">×</span>
@@ -30,12 +30,30 @@
           <div class="panel panel-warning">
             <div class="panel-heading">On going</div>
             <div class="panel-body"></div>
+              <ul v-if="task.length">
+                <li v-for="(item,index) in task" :key="index" v-if="item.states === 2">
+                  <label><input type="checkbox" @change="changeState(index)" v-model="checked[index]"></label> 
+                  {{ item.contents }} 
+                  <button class="close" type="button" aria-label="Close" @click="delTask(index)">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </li>
+              </ul>
           </div>
         </div>
         <div class="col-xs-4">
           <div class="panel panel-success">
             <div class="panel-heading">Done</div>
             <div class="panel-body"></div>
+              <ul v-if="task.length">
+                <li v-for="(item,index) in task" :key="index" v-if="item.states === 3">
+                  <label><input type="checkbox" @change="changeState(index)" v-model="checked[index]"></label> 
+                  {{ item.contents }} 
+                  <button class="close" type="button" aria-label="Close" @click="delTask(index)">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </li>
+              </ul>
           </div>
         </div>
       </div>
@@ -46,12 +64,10 @@
 </template>
 
 <script>
-import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 export default {
   name: 'HelloWorld',
   components: {
-    "headers-vue": Header,
     'footer-vue': Footer
   },
   data () {
@@ -60,6 +76,7 @@ export default {
       msg: 'Provide a task or workspace management tool for everyone',
       inputValue: '',
       task: JSON.parse(localStorage.getItem('task')),
+      checked: [],
       newtask: []
     }
   }, 
@@ -72,9 +89,9 @@ export default {
     addTask: function(){
       if(this.inputValue){
         this.task.push({contents:this.inputValue, states:1});
+        this.checked.push(false);
         this.inputValue = '';
         localStorage.setItem('task', JSON.stringify(this.task));
-        //console.log(this.task);
       }else{
         console.log('你还没有输入内容....')
       }
@@ -84,8 +101,21 @@ export default {
       localStorage.setItem('task', JSON.stringify(this.task));
     },
     changeState: function(index){
-      return this.task[index].states ++;
-      console.log(this.task[index].states)
+      var state = this.task[index].states;
+      if(this.checked[index]){
+        if(state === 1){
+          state = 2;
+        }else{
+          state = 3;
+        }
+        this.task[index].states = state;        
+        localStorage.setItem('task', JSON.stringify(this.task));
+      }else{
+        if(state === 3) state = 2;
+        else state = 1;
+        this.task[index].states = state;
+        localStorage.setItem('task', JSON.stringify(this.task));
+      }
     }
   },
   watch: {
@@ -110,7 +140,7 @@ export default {
     }
   }
 }
-.row{
+.row{margin-bottom: 70px;
   ul{
     list-style-type: none;
     text-align: left;

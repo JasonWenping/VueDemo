@@ -5,8 +5,13 @@
 </template>
 
 <script>
+import Header from '@/components/Header'
+import Login from '@/components/Login'
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    'my-header': Header
+  }
 }
 </script>
 

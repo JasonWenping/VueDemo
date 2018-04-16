@@ -13,18 +13,27 @@
               </div>
               <div class="collapse navbar-collapse" id="myCollapse">
                   <ul class="nav navbar-nav navbar-right" style="margin-top: 0px;">
-                      <li class="active"><a href="#"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-                      <li><a href="#"><span class="glyphicon glyphicon-th-list"></span> List</a></li>
-                      <li><a href="#"><span class="glyphicon glyphicon-tasks"></span> Task</a></li>
+                      <li class="active"><router-link :to="{name:'HelloWorld'}"><span class="glyphicon glyphicon-home"></span> Home</router-link></li>
+                      <li><router-link :to="{name:'List'}"><span class="glyphicon glyphicon-th-list"></span> List</router-link></li>
+                      <li><router-link :to="{name:'Task'}"><span class="glyphicon glyphicon-tasks"></span> Task</router-link></li>
                     </ul>
                 </div>
           </div>
       </nav>
+      <router-view></router-view>
   </div>
 </template>
 <script>
+import HelloWorld from '@/components/Helloworld'
+import List from '@/components/List'
+import Task from '@/components/Task'
 export default {
-  name: 'Header'
+  name: 'Header',
+  components: {
+      'hello-world': HelloWorld,
+      'list-page': List,
+      'task-page': Task
+  }
 }
 </script>
 <style lang='scss' scoped>
