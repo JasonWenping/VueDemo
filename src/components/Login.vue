@@ -1,5 +1,6 @@
 <template>
 <div id="app">
+  
   <div class="container">
     <!-- 登录面板 -->
     <div class="panel panel-default">
@@ -11,23 +12,20 @@
           <div class="col-xs-1"></div>
           <div class="col-xs-10">
             <form id="form" action="post"  data-parsley-validate>
-            <div>
-              <span class="glyphicon glyphicon-user"></span>
-              <input type="text" class="form-control" placeholder="用户名/手机/邮箱" v-model="username" data-index="1" data-parsley-required="true">
-              <!-- <i v-if="showSpan">请输入用户名</i> -->
-            </div>
-            <div>
-              <span class="glyphicon glyphicon-lock"></span>
-              <input type="password" class="form-control" placeholder="密码" data-index="1" data-parsley-required="true">
-            </div>
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="验证码">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-info">获取验证码</button>
-              </span>              
-            </div>
-            <router-link to="/Header"><button type="submit" class="btn btn-primary" @click="submitCheck">登 录</button></router-link>
-            <button type="submit" class="btn btn-default">注 册</button>
+              <div class="input-no-group">
+                <span class="glyphicon glyphicon-user"></span>
+                <input type="text" class="form-control" placeholder="用户名/手机/邮箱" v-model="username" data-index="1" data-parsley-required="true">
+                <!-- <i v-if="showSpan">请输入用户名</i> -->
+              </div>
+              <div class="input-no-group">
+                <span class="glyphicon glyphicon-lock"></span>
+                <input type="password" class="form-control" placeholder="密码" data-index="1" data-parsley-required="true">
+              </div>
+              <div class="input-group">
+                <input id="inputCode" type="text" class="form-control" placeholder="验证码"><label id="verifyCode" class="input-group-addon"></label>
+              </div>
+              <router-link to="/Header"><button type="submit" class="btn btn-primary" @click="submitCheck">登 录</button></router-link>
+              <button type="button" id="check-btn" class="btn btn-default">注 册</button>
             </form>
           </div>
           <div class="col-xs-1"></div>
@@ -70,12 +68,14 @@
 </template>
 <script>
 import Header from '@/components/Header'
+import '../../static/lib/verify.js'
 export default {
   name: 'Login',
   data() {
     return {
       username: '',
-      showSpan: false
+      showSpan: false,
+      code: ''
     }
   },
   methods: {
@@ -85,12 +85,34 @@ export default {
       }else{
         this.showSpan = false;
       }
+    },
+    getServerData: function(){
+      
     }
   }
 }
   $(function(){
     //alert('ss');  
-    $('#form').parsley();//调用parsley表单验证插件  
+    $('#verifyCode').codeVerify({
+        type : 1,
+        width : '200px',
+        height : '32px',
+        fontSize : '20px',
+        fontFamily : 'Helvetica',
+        codeLength : 4,
+        btnId : 'check-btn',
+        inputId : 'inputCode',
+        ready : function() {
+        },
+        success : function() {
+            //alert('验证匹配！');
+            console.log('验证成功！');
+        },
+        error : function() {
+            //alert('验证码不匹配！');
+            console.log('验证码不匹配！');
+        }
+    }); 
   });  
 </script>
 <style lang="scss" scoped>
@@ -106,6 +128,9 @@ export default {
       .input-group{
         margin: 2rem 0;
       }
+      .input-no-group{
+        margin: 0.5rem 0;
+      }
       .btn{
         width: 10rem;
       }
@@ -119,6 +144,10 @@ export default {
       }
       input[data-index='1']{
         padding-left: 2rem;
+      }
+      #verifyCode{
+        padding: 0;
+        min-width: 100px;
       }
     }
   }
