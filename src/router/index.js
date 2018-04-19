@@ -12,7 +12,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Login',
+      name: 'login-page',
       component: Login
     },
     {
@@ -22,17 +22,17 @@ export default new Router({
       children: [
         {
           path: 'helloworld',
-          name: 'HelloWorld',
+          name: 'index-page',
           component: HelloWorld
         },
         {
           path: 'list',
-          name: 'List',
+          name: 'list-page',
           component: List
         },
         {
           path: 'task',
-          name: 'Task',
+          name: 'task-page',
           component: Task
         },
         {

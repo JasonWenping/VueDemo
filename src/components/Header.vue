@@ -13,9 +13,9 @@
             </div>
             <div class="collapse navbar-collapse" id="myCollapse">
                 <ul class="nav navbar-nav" style="margin-top: 0px;">
-                    <li class="active"><router-link :to="{name:'HelloWorld'}"><span class="glyphicon glyphicon-home"></span> Home</router-link></li>
-                    <li><router-link :to="{name:'List'}"><span class="glyphicon glyphicon-question-sign"></span> Q&A</router-link></li>
-                    <li><router-link :to="{name:'Task'}"><span class="glyphicon glyphicon-tasks"></span> Log</router-link></li>
+                    <li class="active"><router-link :to="{name:'index-page'}"><span class="glyphicon glyphicon-home"></span> Home</router-link></li>
+                    <li><router-link :to="{name:'list-page'}"><span class="glyphicon glyphicon-question-sign"></span> Q&A</router-link></li>
+                    <li><router-link :to="{name:'task-page'}"><span class="glyphicon glyphicon-tasks"></span> Log</router-link></li>
                 </ul>
                 <span class="navbar-text navbar-right"><router-link class="navbar--link" to="/">{{ users.username }}</router-link></span>
             </div>            

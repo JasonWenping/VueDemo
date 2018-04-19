@@ -14,7 +14,7 @@
           <div class="panel panel-info">
             <div class="panel-heading">Ready</div>
             <div class="panel-body">
-              <ul v-if="task.length">
+              <ul v-if="task">
                 <li v-for="(item,index) in task" :key="index" v-if="item.states === 1">
                   <label><input type="checkbox" @change="changeState(index)" v-model="checked[index]"></label> 
                   {{ item.contents }} 
@@ -30,7 +30,7 @@
           <div class="panel panel-warning">
             <div class="panel-heading">On going</div>
             <div class="panel-body"></div>
-              <ul v-if="task.length">
+              <ul v-if="task">
                 <li v-for="(item,index) in task" :key="index" v-if="item.states === 2">
                   <label><input type="checkbox" @change="changeState(index)" v-model="checked[index]"></label> 
                   {{ item.contents }} 
@@ -45,7 +45,7 @@
           <div class="panel panel-success">
             <div class="panel-heading">Done</div>
             <div class="panel-body"></div>
-              <ul v-if="task.length">
+              <ul v-if="task">
                 <li v-for="(item,index) in task" :key="index" v-if="item.states === 3">
                   <label><input type="checkbox" @change="changeState(index)" v-model="checked[index]"></label> 
                   {{ item.contents }} 
@@ -76,18 +76,29 @@ export default {
       msg: 'Provide a task or workspace management tool for everyone',
       inputValue: '',
       task: JSON.parse(localStorage.getItem('task')),
-      checked: [],
-      newtask: []
+      checked: []
     }
   }, 
   computed: {
     titles: function(){
       return this.title.toUpperCase();
+    },
+    initTask: function(){
+      if(!this.task){
+        localStorage.setItem('task', JSON.stringify([]));
+      }
     }
+  },
+  created: function(){
+    this.initTask;
   },
   methods: {
     addTask: function(){
+      if(this.task == null){
+        this.task = [];
+      }
       if(this.inputValue){
+        console.log(this.task);
         this.task.push({contents:this.inputValue, states:1});
         this.checked.push(false);
         this.inputValue = '';
