@@ -29,17 +29,17 @@
             <form id="form" action="post"  data-parsley-validate>
               <div class="input-no-group">
                 <span class="glyphicon glyphicon-user"></span>
-                <input type="text" class="form-control" placeholder="用户名/手机/邮箱" v-model="username" data-index="1" data-parsley-required="true">
+                <input type="text" class="form-control" placeholder="用户名/手机/邮箱" @blur="isUsrFill = (username=='')" v-model="username" data-index="1" :class="{inputErro: isUsrFill}">
                 <!-- <i v-if="showSpan">请输入用户名</i> -->
               </div>
               <div class="input-no-group">
                 <span class="glyphicon glyphicon-lock"></span>
-                <input type="password" class="form-control" placeholder="密码" data-index="1" data-parsley-required="true">
+                <input type="password" class="form-control" v-model="password" placeholder="密码" @blur="isPswFill = (password=='')" data-index="1" :class="{inputErro: isPswFill}">
               </div>
               <div class="input-group">
-                <input id="inputCode" type="text" class="form-control" placeholder="验证码"><label id="verifyCode" class="input-group-addon"></label>
+                <input id="inputCode" type="text" class="form-control" v-model="verifycode" placeholder="验证码" @blur="isCodeFill = (verifycode=='')" :class="{inputErro: isCodeFill}"><label id="verifyCode" class="input-group-addon"></label>
               </div>
-              <router-link to="/Header"><button type="submit" class="btn btn-primary" @click="submitCheck">登 录</button></router-link>
+              <button type="submit" class="btn btn-primary" @click="formVerify">登 录</button>
               <button type="button" class="btn btn-default" @click="switchPanel">注 册</button>
             </form>
           </div>
@@ -56,24 +56,26 @@
       <div class="panel-body">
         <div class="row">
           <div class="col-xs-1"></div>
-          <div class="col-xs-10">
+          <div class="col-xs-10">            
+            <form id="form" action="post"  data-parsley-validate>
             <div class="regis_input celphone">
             <label for="phone">手机号:</label>
-            <input type="text" class="form-control" name="phone">
+            <input type="text" class="form-control" name="phone" required>
             </div>
             <div class="regis_input verification">
             <label for="phone">验证码:</label>
-            <div class="input-group"><input type="text" class="form-control" name="phone"><span class="input-group-btn"><button type="button" class="btn btn-info">获取验证码</button></span></div>
+            <div class="input-group"><input type="text" class="form-control" name="phoneVerify" required><span class="input-group-btn"><button type="button" class="btn btn-info">获取验证码</button></span></div>
             </div>
             <div class="regis_input celphone">
             <label for="phone">密码:</label>
-            <input type="password" class="form-control" name="phone">
+            <input type="password" class="form-control" name="password" required>
             </div>
             <div class="regis_input celphone">
             <label for="phone">确认密码:</label>
-            <input type="password" class="form-control" name="phone">
+            <input type="password" class="form-control" name="repassword" required>
             </div>
             <button type="button" id="check-btn" class="btn btn-primary">注 册</button><span @click="switchPanel">有账号，去登录</span>
+            </form>
           </div>
           <div class="col-xs-1"></div>
         </div>
@@ -86,6 +88,7 @@
 <script>
 import Header from '@/components/Header'
 import '../../static/lib/verify.js'
+import '../../static/lib/parsley.min.js'
 import Footer from '@/components/Footer'
 export default {
   name: 'Login',
@@ -95,24 +98,58 @@ export default {
   data() {
     return {
       username: '',
+      password: '',
       showSpan: false,
-      code: '',
-      showRegister: false
+      verifycode: '',
+      showRegister: false,
+      isUsrFill: false,
+      isPswFill: false,
+      isCodeFill: false,
+      userList: []
     }
   },
+  mounted(){
+    this.getServerData();
+  },
   methods: {
-    submitCheck: function(){
-      if(this.username === ''){
-        this.showSpan = true;
-      }else{
-        this.showSpan = false;
-      }
-    },
     switchPanel: function(){
       this.showRegister = !this.showRegister;
     },
     getServerData: function(){
-      
+      this.$axios.get('/api/data')
+       .then(function(response){
+          var userlist = response.data.data.users
+          //this.userList = userlist
+          console.log(userlist)
+       })
+       .catch(function(error){
+         console.log('Bad request ！')
+       })
+    },
+    formVerify: function(e){
+      this.getServerData();
+      if(!this.username){
+        e.preventDefault();
+        this.isUsrFill = true;
+      }else if(!this.password){
+        this.isUsrFill = false
+        e.preventDefault();
+        this.isPswFill = true
+      }else if(!this.verifycode){
+        this.isPswFill = false
+        e.preventDefault();
+        this.isCodeFill = true
+      }else{
+        // if(this.username.indexOf(users.username) == -1){
+        //   alert('用户名不存在')
+        // }
+      }      
+      const name = [];
+      this.userList.forEach(element => {
+        name.push(element.username);
+        console.log(element.username)
+      });
+      console.log('ll');
     }
   }
 }
@@ -152,10 +189,7 @@ export default {
       .item{
         width: 100%;
         height: 40rem;  
-        -webkit-box-shadow: 30px 3px 3px;
-        -moz-box-shadow: 30px 3px 3px;
-        box-shadow: 30px 3px 3px;  
-        border-radius: 1rem;
+        border-radius: 0 1rem 1rem 0;
       }
       .slide1{
         background: url('./../assets/images/log_gallery_bg1.jpg') no-repeat 100% center;
@@ -196,6 +230,10 @@ export default {
       }
       input[data-index='1']{
         padding-left: 2rem;
+      }
+      .inputErro{
+        border: 1px solid red;
+        box-shadow: 0 0 2px rgba($color: rgba(231, 38, 38, 0.973), $alpha: 0.8);
       }
       #verifyCode{
         padding: 0;

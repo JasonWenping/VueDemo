@@ -7,8 +7,10 @@ import './assets/css/bootstrap.min.css'
 //import './assets/css/verify.css'
 import './assets/js/jquery.min.js'
 import './assets/js/bootstrap.min.js'
+import axios from 'axios'
 
 Vue.config.productionTip = false
+Vue.prototype.$axios = axios
 
 /* eslint-disable no-new */
 new Vue({
