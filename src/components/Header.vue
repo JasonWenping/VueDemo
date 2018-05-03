@@ -32,7 +32,7 @@ export default {
   name: 'Header',
   data() {
       return {
-          users: {username:'jason', password:'111111'}
+          users: JSON.parse(sessionStorage.getItem('usr'))
       }
   }  
 //   components: {

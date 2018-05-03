@@ -39,7 +39,7 @@
               <div class="input-group">
                 <input id="inputCode" type="text" class="form-control" v-model="verifycode" placeholder="验证码" @blur="isCodeFill = (verifycode=='')" :class="{inputErro: isCodeFill}"><label id="verifyCode" class="input-group-addon"></label>
               </div>
-              <button type="submit" class="btn btn-primary" @click="formVerify">登 录</button>
+              <button id="log-btn" type="submit" class="btn btn-primary" @click="formVerify">登 录</button>
               <button type="button" class="btn btn-default" @click="switchPanel">注 册</button>
             </form>
           </div>
@@ -105,11 +105,12 @@ export default {
       isUsrFill: false,
       isPswFill: false,
       isCodeFill: false,
-      userList: []
+      userList: JSON.parse(localStorage.getItem('users'))
     }
   },
   mounted(){
     this.getServerData();
+    this.loadVerify()
   },
   methods: {
     switchPanel: function(){
@@ -119,63 +120,68 @@ export default {
       this.$axios.get('/api/data')
        .then(function(response){
           var userlist = response.data.data.users
-          //this.userList = userlist
-          console.log(userlist)
+          localStorage.setItem('users',JSON.stringify(userlist))
+          sessionStorage.setItem('usr','')
        })
        .catch(function(error){
-         console.log('Bad request ！')
+         console.log('Bad request !!!')
        })
     },
     formVerify: function(e){
-      this.getServerData();
+      e.preventDefault();
       if(!this.username){
-        e.preventDefault();
         this.isUsrFill = true;
       }else if(!this.password){
         this.isUsrFill = false
-        e.preventDefault();
         this.isPswFill = true
       }else if(!this.verifycode){
         this.isPswFill = false
-        e.preventDefault();
         this.isCodeFill = true
       }else{
-        // if(this.username.indexOf(users.username) == -1){
-        //   alert('用户名不存在')
-        // }
+        const nameArr = []
+        this.userList.forEach(element => {
+          nameArr.push(element.username)          
+        });
+        if(nameArr.indexOf(this.username) != -1){
+          var pass = this.userList[nameArr.indexOf(this.username)].password
+          if(this.password === pass){
+            alert('登录成功！')
+            location.href = './header#/header'
+            sessionStorage.setItem('usr',JSON.stringify(this.userList[nameArr.indexOf(this.username)]))
+          }else{
+            console.log('密码错误！')
+          }
+        }else{
+          console.log('用户名不存在！')
+        }
       }      
-      const name = [];
-      this.userList.forEach(element => {
-        name.push(element.username);
-        console.log(element.username)
-      });
-      console.log('ll');
+    },
+    loadVerify: function(){
+      $('#myCarousel').carousel();
+      $('#verifyCode').codeVerify({
+          type : 1,
+          width : '200px',
+          height : '32px',
+          fontSize : '20px',
+          fontFamily : 'Helvetica',
+          codeLength : 4,
+          btnId : 'log-btn',
+          inputId : 'inputCode',
+          ready : function() {
+          },
+          success : function() {
+              //alert('验证匹配！');
+              //console.log('验证成功！');
+          },
+          error : function() {
+              alert('验证码不匹配！');
+              //console.log('验证码不匹配！');
+          }
+      }); 
     }
   }
 }
   $(function(){
-    //alert('ss');
-    $('#myCarousel').carousel();
-    $('#verifyCode').codeVerify({
-        type : 1,
-        width : '200px',
-        height : '32px',
-        fontSize : '20px',
-        fontFamily : 'Helvetica',
-        codeLength : 4,
-        btnId : 'check-btn',
-        inputId : 'inputCode',
-        ready : function() {
-        },
-        success : function() {
-            //alert('验证匹配！');
-            console.log('验证成功！');
-        },
-        error : function() {
-            //alert('验证码不匹配！');
-            console.log('验证码不匹配！');
-        }
-    }); 
   });  
 </script>
 <style lang="scss" scoped>
